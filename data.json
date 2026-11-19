@@ -1,0 +1,15 @@
+{
+  "title": "Sandbox data",
+  "items": [
+    {
+      "id": "1",
+      "name": "First item",
+      "note": "Edit this in the browser, then commit."
+    },
+    {
+      "id": "2",
+      "name": "Second item",
+      "note": "GitHub Pages redeploys after the commit."
+    }
+  ]
+}

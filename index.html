@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<title>Pages Self-Editor</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>Pages Self-Editor</h1>
+    <p class="subtitle">Proof of concept: edit <code>data.json</code>, commit it to GitHub, and let GitHub Pages redeploy.</p>
+  </div>
+  <span id="connection-badge" class="badge">Not connected</span>
+</header>
+
+<main>
+  <section class="card">
+    <details id="setup-details" open>
+      <summary>GitHub connection</summary>
+      <form id="setup-form" class="grid">
+        <label>Owner
+          <input id="owner" name="owner" placeholder="luizcarlos1405" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Repository
+          <input id="repo" name="repo" placeholder="sandbox" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Branch
+          <input id="branch" name="branch" value="main" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="span-2">Fine-grained token
+          <input id="token" name="token" type="password" placeholder="github_pat_..." autocomplete="new-password" spellcheck="false">
+        </label>
+        <p class="hint span-2">
+          Needs <strong>Contents: Read and write</strong> on this repository only. It stays in this tab's
+          <code>sessionStorage</code> and is sent only to <code>api.github.com</code>.
+          <a id="token-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noreferrer">Create a token</a>.
+        </p>
+        <div class="actions span-2">
+          <button type="submit" class="primary">Connect</button>
+          <button type="button" id="forget">Forget token</button>
+        </div>
+      </form>
+    </details>
+  </section>
+
+  <section class="layout">
+    <article class="card">
+      <div class="card-head">
+        <h2>Current data</h2>
+        <button type="button" id="reload">Reload</button>
+      </div>
+      <pre id="viewer" class="viewer">Not loaded.</pre>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <h2>Edit <code>data.json</code></h2>
+        <span id="dirty" class="pill">clean</span>
+      </div>
+      <textarea id="editor" spellcheck="false" placeholder="{ ... }"></textarea>
+      <div class="actions">
+        <button type="button" id="commit" class="primary">Commit to GitHub</button>
+        <button type="button" id="reset">Reset</button>
+      </div>
+      <p id="status" class="status" role="status"></p>
+    </article>
+  </section>
+</main>
+
+<footer>
+  <p>This is a proof of concept. The token is never written to the repository or to <code>localStorage</code>.</p>
+</footer>
+
+<script src="./app.js"></script>
+</body>
+</html>
