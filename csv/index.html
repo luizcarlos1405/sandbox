@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
+<title>Sandbox CSV Editor</title>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>Sandbox CSV Editor</h1>
+    <p class="subtitle">Edit <code>csv/data.csv</code> and images in the browser. Save both in one commit; GitHub Pages redeploys.</p>
+  </div>
+  <span id="connection-badge" class="badge">Not connected</span>
+</header>
+
+<main>
+  <section class="card">
+    <details id="setup-details" open>
+      <summary>GitHub connection</summary>
+      <form id="setup-form" class="grid">
+        <label>Owner
+          <input id="owner" name="owner" placeholder="luizcarlos1405" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Repository
+          <input id="repo" name="repo" placeholder="sandbox" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Branch
+          <input id="branch" name="branch" value="main" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="span-2">Fine-grained token
+          <input id="token" name="token" type="password" placeholder="github_pat_..." autocomplete="new-password" spellcheck="false">
+        </label>
+        <p class="hint span-2">
+          Needs <strong>Contents: Read and write</strong> on this repository only. It stays in this tab's
+          <code>sessionStorage</code> and is sent only to <code>api.github.com</code>.
+          <a id="token-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noreferrer">Create a token</a>.
+        </p>
+        <div class="actions span-2">
+          <button type="submit" class="primary" id="connect">Connect</button>
+          <button type="button" id="reload">Reload</button>
+          <button type="button" id="forget">Forget token</button>
+        </div>
+      </form>
+    </details>
+  </section>
+
+  <section class="card">
+    <div class="toolbar">
+      <div class="commit-box">
+        <label for="commit-message">Commit message</label>
+        <input id="commit-message" value="Update content from the web editor" autocomplete="off" spellcheck="false" disabled>
+      </div>
+      <div class="actions toolbar-actions">
+        <button type="button" id="save" class="primary" disabled>Save changes</button>
+        <button type="button" id="discard" disabled>Discard</button>
+      </div>
+      <span id="dirty" class="pill">clean</span>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Editor sections">
+      <button type="button" role="tab" id="tab-content" aria-selected="true" aria-controls="panel-content">Content</button>
+      <button type="button" role="tab" id="tab-images" aria-selected="false" aria-controls="panel-images">Images <span id="images-badge" class="count" hidden></span></button>
+    </div>
+
+    <div id="panel-content" role="tabpanel" aria-labelledby="tab-content">
+      <div class="panel-head">
+        <p class="hint">Columns come from <code>csv/data.csv</code>. Image columns use a dropdown of files in <code>csv/images/</code>.</p>
+        <button type="button" id="add-row" disabled>Add row</button>
+      </div>
+      <div class="table-wrap">
+        <table id="grid" class="grid-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="grid-empty" class="empty" hidden>No rows yet. Connect to load the file, or add a row.</p>
+    </div>
+
+    <div id="panel-images" role="tabpanel" aria-labelledby="tab-images" hidden>
+      <div class="panel-head">
+        <p class="hint">
+          Images are resized to at most 1600px and re-encoded to WebP/JPEG before upload. GIFs are uploaded as-is.
+          Old versions stay in Git history, so replace rather than re-upload when possible.
+        </p>
+        <label class="file-button disabled" id="upload-label">
+          Upload images
+          <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple disabled>
+        </label>
+      </div>
+      <div id="gallery" class="gallery"></div>
+      <p id="gallery-empty" class="empty" hidden>No images yet. Upload one to get started.</p>
+      <div id="deleted-wrap" hidden>
+        <h3>Deleted (staged)</h3>
+        <div id="deleted-list" class="chips"></div>
+      </div>
+      <input id="replace-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+    </div>
+  </section>
+
+  <p id="status" class="status" role="status"></p>
+</main>
+
+<footer>
+  <p>
+    Proof of concept. The token stays in this tab's <code>sessionStorage</code>.
+    Saves are one atomic commit via the Git Data API.
+  </p>
+  <p>
+    <a href="../">JSON version</a> · Limits: 1 GB site, 100 GB/month bandwidth, 100 MiB/file.
+    Pages builds are rate-limited.
+  </p>
+</footer>
+
+<script src="./csv.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
